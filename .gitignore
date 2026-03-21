@@ -1,0 +1,86 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+env/
+venv/
+ENV/
+.env/
+.venv/
+
+# Variables de entorno
+.env
+.env.*
+
+# Archivos de configuración sensibles
+*.sqlite3
+db.sqlite3
+
+# Archivos estáticos recolectados
+staticfiles/
+media/
+
+# Logs
+*.log
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos de pytest
+.pytest_cache/
+
+# Archivos de coverage
+.coverage
+htmlcov/
+
+# Archivos de migrations compilados
+**/migrations/*.pyc
+**/migrations/*.pyo
+
+# Ignorar migraciones (opcional, solo si quieres controlarlas manualmente)
+# **/migrations/*.py
+# !**/migrations/__init__.py
+
+# Archivos de Docker (si usas)
+*.pid
+*.seed
+*.pid.lock
+
+# Archivos de build
+build/
+dist/
+*.egg-info/
+
+# Archivos de Node (si usas frontend con Django)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Archivos temporales
+*.tmp
+*.bak
+
+# Archivos de backup
+*.bak
+*.backup
+
+# Archivos de caché
+.cache/
+
+# Archivos de collectstatic en producción
+static_root/
+
+# Archivos locales de configuración
+local_settings.py
+
+# Archivos de seguridad
+secrets.json
