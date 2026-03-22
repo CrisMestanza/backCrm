@@ -1,0 +1,46 @@
+name: 🚀 Deploy Django API
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            set -e
+
+            APP=/home/ramozobu/api
+            VENV=/home/ramozobu/virtualenv/api/3.10/bin/activate
+            LOG=/home/ramozobu/deploy.log
+
+            {
+              echo "===== DEPLOY START $(date) ====="
+
+              cd $APP
+
+              git fetch origin
+              git reset --hard origin/main
+
+              source $VENV
+
+              pip install -r requirements.txt --quiet
+
+              python manage.py migrate --noinput
+              python manage.py collectstatic --noinput
+              python manage.py check --deploy
+
+              touch tmp/restart.txt
+
+              echo "===== DEPLOY DONE $(date) ====="
+            } >> $LOG 2>&1
