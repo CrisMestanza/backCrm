@@ -81,9 +81,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'crminmobiliaria',
-        'USER': 'root',
+        'USER': 'ramozobu_ramos',
         'PASSWORD': '72655883cristian',
-        'HOST': 'localhost',
+        'HOST': '127.0.01',
         'PORT': '3306',
     }
 }
