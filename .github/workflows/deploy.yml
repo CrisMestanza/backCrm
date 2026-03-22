@@ -36,9 +36,7 @@ jobs:
 
               source $VENV
 
-              pip uninstall mysqlclient -y || true
-              pip uninstall MySQL-python -y || true
-              pip install --no-cache-dir -r requirements.txt
+              pip install -r requirements.txt --no-cache-dir
 
               python manage.py migrate --noinput
               python manage.py collectstatic --noinput
