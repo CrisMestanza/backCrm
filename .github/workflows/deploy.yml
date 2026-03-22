@@ -26,7 +26,9 @@ jobs:
 
             {
               echo "===== DEPLOY START $(date) ====="
-
+              echo "PYTHON:" $(which python)
+              echo "PIP:" $(which pip)
+              pip list
               cd $APP
 
               git fetch origin
@@ -34,7 +36,9 @@ jobs:
 
               source $VENV
 
-              pip install -r requirements.txt --quiet
+              pip uninstall mysqlclient -y || true
+              pip uninstall MySQL-python -y || true
+              pip install --no-cache-dir -r requirements.txt
 
               python manage.py migrate --noinput
               python manage.py collectstatic --noinput
