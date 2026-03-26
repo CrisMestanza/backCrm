@@ -30,6 +30,7 @@ class Interacciones(models.Model):
     id_usuario = models.ForeignKey('Usuarios', models.DO_NOTHING, db_column='id_usuario')
     id_tipo_interaccion = models.ForeignKey('TipoInteraccion', models.DO_NOTHING, db_column='id_tipo_interaccion')
     duracion_segundos = models.IntegerField(blank=True, null=True)
+    duracion_minutos = models.IntegerField(blank=True, null=True)
     resultado = models.CharField(max_length=150, blank=True, null=True)
     nota = models.TextField(blank=True, null=True)
     fecha = models.DateTimeField(blank=True, null=True)

@@ -8,6 +8,7 @@ from .views.origen import *
 from .views.proyecto import *
 from .views.historialEstadoLead import *
 from .views.ventas import *
+from .views.excel import *
 
 urlpatterns = [
     path('login/', login, name='login'),
@@ -52,4 +53,8 @@ urlpatterns = [
    
     # Historial Estado Lead
     path('gethistorialestadolead/<int:id_asesor>/', getHistorialEstadoLead, name='get-historial-estado-lead'),
+    
+    # Excel
+    path('getexcel/', getExcel, name='get-ventas'), 
+    
 ]
