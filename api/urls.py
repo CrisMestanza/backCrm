@@ -55,6 +55,6 @@ urlpatterns = [
     path('gethistorialestadolead/<int:id_asesor>/', getHistorialEstadoLead, name='get-historial-estado-lead'),
     
     # Excel
-    path('getexcel/', getExcel, name='get-ventas'), 
+    path('getexcel/<int:id_asesor>/', getExcel, name='get-ventas'), 
     
 ]
