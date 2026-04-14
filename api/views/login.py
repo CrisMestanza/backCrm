@@ -9,7 +9,9 @@ from django.contrib.auth.hashers import check_password
 def login(request):
     correo = request.data.get('email')
     password = request.data.get('password')
-
+    print(f"Intento de login con email: {correo}")  
+    print(f"Intento de login con password: {password}")  
+    
     # Validar campos vacíos
     if not correo or not password:
         return Response(
