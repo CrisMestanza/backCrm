@@ -8,6 +8,7 @@ from .views.origen import *
 from .views.proyecto import *
 from .views.historialEstadoLead import *
 from .views.ventas import *
+from .views.validar import *
 from .views.excel import *
 
 urlpatterns = [
@@ -56,5 +57,8 @@ urlpatterns = [
     
     # Excel
     path('getexcel/<int:id_asesor>/', getExcel, name='get-ventas'), 
+    
+    # Validar Webhook de Facebook
+    path('webhook/', facebook_webhook, name='facebook_webhook'),
     
 ]
