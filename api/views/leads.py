@@ -29,8 +29,6 @@ def totalLeadsHoy(request):
 
 @api_view(['POST'])
 def saveLead(request):
-
-    print("Datos recibidos:", request.data)  # Imprime los datos recibidos para depuración
     request.data['id_subestado'] = 1
     serializer = LeadsSaveSerializer(data=request.data)
     if serializer.is_valid():
