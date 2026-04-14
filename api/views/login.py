@@ -9,16 +9,32 @@ from django.contrib.auth.hashers import check_password
 def login(request):
     correo = request.data.get('email')
     password = request.data.get('password')
-    print(f"Correo: {correo}, Password: {password}")  # Debugging line
-    # Buscar usuario SOLO por email
-    usuario = Usuarios.objects.filter(email=correo).first()
-    print(f"Usuario encontrado: {usuario}")  # Debugging line
-    if usuario :
+
+    # Validar campos vacíos
+    if not correo or not password:
+        return Response(
+            {"success": False, "message": "Email y password son requeridos"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Buscar usuario
+    usuario = Usuarios.objects.filter(email=correo, password=password).first()
+
+    if usuario:
         serializer = UsuariosSerializer(usuario)
-        print(f"Usuario serializado: {serializer.data}") 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "success": True,
+                "message": "Login correcto",
+                "data": serializer.data
+            },
+            status=status.HTTP_200_OK
+        )
 
     return Response(
-        {"error": "Credenciales incorrectas"},
+        {
+            "success": False,
+            "message": "Credenciales incorrectas"
+        },
         status=status.HTTP_401_UNAUTHORIZED
     )
