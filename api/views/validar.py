@@ -1,25 +1,27 @@
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def facebook_webhook(request):
     if request.method == 'GET':
-        # Parámetros que envía Meta para la verificación
+        # Meta envía los parámetros con 'hub.' al principio
         mode = request.GET.get('hub.mode')
         token = request.GET.get('hub.verify_token')
         challenge = request.GET.get('hub.challenge')
 
-        # TU_TOKEN_DE_VERIFICACION debe coincidir con el que pongas en el Dashboard de Meta
+        # Tu token secreto
         VERIFY_TOKEN = 'ramosgrupo#'
 
         if mode == 'subscribe' and token == VERIFY_TOKEN:
-            print("WEBHOOK_VERIFICADO")
-            return HttpResponse(challenge)
+            print("WEBHOOK_VERIFICADO CON ÉXITO")
+            # Es vital devolver el challenge TAL CUAL lo envía Meta
+            return HttpResponse(challenge, content_type="text/plain")
         else:
+            print("FALLÓ LA VERIFICACIÓN: Token incorrecto o modo inválido")
             return HttpResponse('Error de verificación', status=403)
             
     elif request.method == 'POST':
-        # Aquí recibirás las notificaciones reales (leads, mensajes, etc.)
+        # Aquí es donde llegarán los leads
         data = request.body
-        print(f"Evento recibido: {data}")
+        print(f"Lead recibido: {data}")
         return HttpResponse('EVENT_RECEIVED', status=200)
