@@ -17,8 +17,8 @@ def facebook_webhook(request):
             # Es vital devolver el challenge TAL CUAL lo envía Meta
             return HttpResponse(challenge, content_type="text/plain")
         else:
-            print("FALLÓ LA VERIFICACIÓN: Token incorrecto o modo inválido")
-            return HttpResponse('Error de verificación', status=403)
+            print("FALLO LA VERIFICACION: Token incorrecto o modo invalido")
+            return HttpResponse('Error de verificacion', status=403)
             
     elif request.method == 'POST':
         # Aquí es donde llegarán los leads
