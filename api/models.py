@@ -54,7 +54,7 @@ class Leads(models.Model):
     fecha_asignacion = models.DateTimeField(blank=True, null=True)
     observacion = models.TextField(blank=True, null=True)
     nombreAsesor = models.CharField(max_length=150)
-   
+    estado = models.IntegerField(blank=True, null=True)
     class Meta:
         managed = False
         db_table = 'leads'
@@ -130,3 +130,12 @@ class Ventas(models.Model):
     class Meta:
         managed = False
         db_table = 'ventas'
+        
+class Empresa(models.Model):
+    id_empresa = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=45, blank=True, null=True)
+    numero = models.CharField(max_length=45, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'empresa'

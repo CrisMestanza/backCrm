@@ -98,3 +98,9 @@ class GetVentasSerializer(serializers.ModelSerializer):
         # Estos campos no se validarán al recibir el JSON, 
         # permitiendo que is_valid() pase sin ellos.
         depth = 1
+        
+class EmpresaSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Empresa
+        fields = '__all__'

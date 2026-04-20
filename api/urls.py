@@ -10,12 +10,15 @@ from .views.historialEstadoLead import *
 from .views.ventas import *
 from .views.validar import *
 from .views.excel import *
+from .views.meta import *
 
 urlpatterns = [
     path('login/', login, name='login'),
     
     # Asesores
     path('getasesores/', getAsesores, name='asesores'),
+    path('postasesores/', postAsesores, name='post-asesores'),
+    path('deleteasesor/<int:id_usuario>/', deleteAsesor, name='delete-asesor'),
     
     #Leads 
     path('getleads/<int:id_asesor>/', getLead, name='leads'),
@@ -60,5 +63,9 @@ urlpatterns = [
     
     # Validar Webhook de Facebook
     path('webhook/', facebook_webhook, name='facebook_webhook'),
+    
+    # Meta
+    path('webhook/', webhook),
+    path('agregarnumero/', postNumero),
     
 ]

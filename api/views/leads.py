@@ -9,7 +9,7 @@ from django.contrib.auth.hashers import check_password
 
 @api_view(['GET'])
 def getLead(request, id_asesor):
-    leads = Leads.objects.filter(id_asesor=id_asesor).order_by('-fecha_registro')
+    leads = Leads.objects.filter(id_asesor=id_asesor,estado=1).order_by('-fecha_registro')
     serializer = LeadsSerializer(leads, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
