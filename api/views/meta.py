@@ -10,7 +10,7 @@ from api.models import Empresa
 
 # Configuración
 VERIFY_TOKEN = "nexuscrm"
-TOKEN = "EAALjsECm684BRAsO2iUpiSVMQK8kmh7p1XaNJw4bIgoMZBbRkZB95GwBB3T3z5P8JcloStfFZAG7cJdPPJyoFL6u4uSgAEGae4M4K3LqTL46ONp2O7yWuWZCdjWHP346480uvuX96gLGBuN6Hdm3bCV129dH2gCxlQb037GmC8NBo4JVxRQcQ2O4xNDjOjYZAUpymqdvHqqGEBTGKediyungPnxfk6rWhyzV3eZCt5ZA8jD3BleZC78mQbIOgCdsi6CZCUlZBRChFzZA0Sis3VOcRPROP98xJipq58ZB0A8ZD"
+TOKEN = "EAALjsECm684BRTIJIy87D1oBxPeEZAkM5LdYoDBZCHoH2JlwtyGoNRBkOrevsZCuzw8aEuxZBF9HipM9HSJC0ZCZBX7LZBk1ZBOR5sMo3H4qHPiduZB47tZCc9jh3ocnpvURp8Pm7kn0Me8t1AIHnhZAAiEswCFAqUCoNesBZBlxd6JcxZC2Kgyn0siHlXbsjSeBUd2gwFxZBbn28GiNfSOG6WCvaBeKC32xZAcikoZCBcanAUuTjSw2u01zTBYHdkvwv3SbaV7RWLKS0JPBVhZBpouTA1U5m2dXlohXpabo27JWqsgZDZD"
 PHONE_ID = "1089219270943492"
 
 # 🔹 Enviar mensaje WhatsApp
@@ -37,7 +37,7 @@ def enviar_mensaje(destino, texto):
 
 # 🔹 Guardar lead en tu API
 def guardar_lead(numero):
-    url = "http://127.0.0.1:8000/api/savelead/"
+    url = "https://api.ramosgrupo.lat/api/savelead/"
 
     payload = {
         "nombre": "facebook",
@@ -51,7 +51,8 @@ def guardar_lead(numero):
         "id_subestado": 15,
         "fecha_registro": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "fecha_asignacion": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "nombreAsesor": "Verito"
+        "nombreAsesor": "Verito",
+        "estado":1
     }
 
     try:
@@ -67,12 +68,13 @@ def webhook(request):
 
     # ✅ Verificación Meta
     if request.method == 'GET':
+        mode = request.GET.get("hub.mode")
         token = request.GET.get("hub.verify_token")
         challenge = request.GET.get("hub.challenge")
 
-        if token == VERIFY_TOKEN:
-            return HttpResponse(challenge)
-        return HttpResponse("Error de verificación", status=403)
+        if mode == "subscribe" and token == VERIFY_TOKEN:
+            return HttpResponse(challenge, content_type="text/plain")
+        return HttpResponse("Error de verificacion", status=403)
 
     # ✅ Recibir mensajes
     elif request.method == 'POST':
@@ -92,11 +94,13 @@ def webhook(request):
             
             numero_destino = f"51{get_numero_empresa()}"
 
-            texto = f"""
-            📩 Nuevo mensaje recibido
+            texto = f"""📥 *ALERTA DE MENSAJE*
 
-            👤 Cliente: {numero}
-            💬 Mensaje: {mensaje}
+            ━━━━━━━━━━━━━━━
+            👤 *Cliente:* {numero}
+            💬 *Mensaje:*
+            {mensaje}
+            ━━━━━━━━━━━━━━━
             """
 
             enviar_mensaje(numero_destino, texto)
@@ -111,6 +115,7 @@ def webhook(request):
 
 def get_numero_empresa():
     empresa = Empresa.objects.first()
+    print("Número empresa:", empresa.numero if empresa else "No encontrado")
     return empresa.numero if empresa else None
 
 

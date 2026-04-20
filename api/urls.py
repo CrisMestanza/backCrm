@@ -61,11 +61,8 @@ urlpatterns = [
     # Excel
     path('getexcel/<int:id_asesor>/', getExcel, name='get-ventas'), 
     
-    # Validar Webhook de Facebook
-    path('webhook/', facebook_webhook, name='facebook_webhook'),
-    
     # Meta
-    path('webhook/', webhook),
+    path('webhook/', webhook, name='meta_webhook'),
     path('agregarnumero/', postNumero),
     
 ]
