@@ -30,6 +30,7 @@ def totalLeadsHoy(request):
 @api_view(['POST'])
 def saveLead(request):
     request.data['id_subestado'] = 1
+    request.data['estado'] = 1
     print(f"Datos recibidos para guardar lead: {request.data}")
     serializer = LeadsSaveSerializer(data=request.data)
     if serializer.is_valid():
