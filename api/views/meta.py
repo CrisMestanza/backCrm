@@ -99,13 +99,13 @@ def webhook(request):
             
             numero_destino = f"51{get_numero_empresa()}"
     
-            texto = f""" *ALERTA DE MENSAJE*
+            texto = f"""*ALERTA DE MENSAJE*
 
-            ━━━━━━━━━━━━━━━
-            *Cliente:* {numero}
-            *Mensaje:*
+            ------------------------
+            Cliente: {numero}
+            Mensaje:
             {mensaje}
-            ━━━━━━━━━━━━━━━
+            ------------------------
             """
             enviar_mensaje(numero_destino, texto)
 
