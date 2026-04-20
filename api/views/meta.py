@@ -109,7 +109,7 @@ def webhook(request):
             enviar_mensaje(numero_destino, texto)
 
         except Exception as e:
-            print("Evento diferente o error:", data)
+            print("Evento diferente o error:")
             print("Error:", str(e))
 
         return Response({"status": "ok"})
