@@ -8,6 +8,7 @@ from datetime import datetime
 from api.serializers import EmpresaSerializer
 from api.models import Empresa
 import os
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -88,19 +89,19 @@ def webhook(request):
             mensaje = data['entry'][0]['changes'][0]['value']['messages'][0]['text']['body']
             numero = data['entry'][0]['changes'][0]['value']['messages'][0]['from']
 
-
+            print(f"De {numero}: {mensaje}")
             #  Guardar lead automáticamente
             guardar_lead(numero)
 
             #  Reenviar a otro número
             
             numero_destino = f"51{get_numero_empresa()}"
-
-            texto = f"""📥 *ALERTA DE MENSAJE*
+    
+            texto = f""" *ALERTA DE MENSAJE*
 
             ━━━━━━━━━━━━━━━
-            👤 *Cliente:* {numero}
-            💬 *Mensaje:*
+            *Cliente:* {numero}
+            *Mensaje:*
             {mensaje}
             ━━━━━━━━━━━━━━━
             """
