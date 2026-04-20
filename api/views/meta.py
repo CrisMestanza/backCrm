@@ -7,10 +7,13 @@ import requests
 from datetime import datetime
 from api.serializers import EmpresaSerializer
 from api.models import Empresa
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
+TOKEN = os.getenv("WHATSAPP_TOKEN")
 # Configuración
 VERIFY_TOKEN = "nexuscrm"
-TOKEN = "EAALjsECm684BRTIJIy87D1oBxPeEZAkM5LdYoDBZCHoH2JlwtyGoNRBkOrevsZCuzw8aEuxZBF9HipM9HSJC0ZCZBX7LZBk1ZBOR5sMo3H4qHPiduZB47tZCc9jh3ocnpvURp8Pm7kn0Me8t1AIHnhZAAiEswCFAqUCoNesBZBlxd6JcxZC2Kgyn0siHlXbsjSeBUd2gwFxZBbn28GiNfSOG6WCvaBeKC32xZAcikoZCBcanAUuTjSw2u01zTBYHdkvwv3SbaV7RWLKS0JPBVhZBpouTA1U5m2dXlohXpabo27JWqsgZDZD"
 PHONE_ID = "1089219270943492"
 
 # 🔹 Enviar mensaje WhatsApp
@@ -32,7 +35,7 @@ def enviar_mensaje(destino, texto):
     }
 
     response = requests.post(url, headers=headers, json=data)
-    print("📤 Enviado:", response.status_code, response.text)
+    print(" Enviado:", response.status_code, response.text)
 
 
 # 🔹 Guardar lead en tu API
@@ -57,16 +60,16 @@ def guardar_lead(numero):
 
     try:
         response = requests.post(url, json=payload)
-        print("🧾 Lead enviado:", response.status_code, response.text)
+        print(" Lead enviado:", response.status_code, response.text)
     except Exception as e:
-        print("❌ Error enviando lead:", str(e))
+        print("Error enviando lead:", str(e))
 
 
 # 🔹 Webhook principal
 @api_view(['GET', 'POST'])
 def webhook(request):
 
-    # ✅ Verificación Meta
+    #  Verificación Meta
     if request.method == 'GET':
         mode = request.GET.get("hub.mode")
         token = request.GET.get("hub.verify_token")
@@ -76,21 +79,20 @@ def webhook(request):
             return HttpResponse(challenge, content_type="text/plain")
         return HttpResponse("Error de verificacion", status=403)
 
-    # ✅ Recibir mensajes
+    #  Recibir mensajes
     elif request.method == 'POST':
         data = request.data
 
         try:
-            # 📩 Obtener mensaje y número
+            #  Obtener mensaje y número
             mensaje = data['entry'][0]['changes'][0]['value']['messages'][0]['text']['body']
             numero = data['entry'][0]['changes'][0]['value']['messages'][0]['from']
 
-            print(f"📩 De {numero}: {mensaje}")
 
-            # 🔥 Guardar lead automáticamente
+            #  Guardar lead automáticamente
             guardar_lead(numero)
 
-            # 🔥 Reenviar a otro número
+            #  Reenviar a otro número
             
             numero_destino = f"51{get_numero_empresa()}"
 
@@ -106,7 +108,7 @@ def webhook(request):
             enviar_mensaje(numero_destino, texto)
 
         except Exception as e:
-            print("⚠️ Evento diferente o error:", data)
+            print("Evento diferente o error:", data)
             print("Error:", str(e))
 
         return Response({"status": "ok"})
