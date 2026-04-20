@@ -8,6 +8,8 @@ from datetime import datetime
 from api.serializers import EmpresaSerializer
 from api.models import Empresa
 import os
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -105,7 +107,6 @@ def webhook(request):
             {mensaje}
             ━━━━━━━━━━━━━━━
             """
-            texto = texto.encode('utf-8', 'ignore').decode('utf-8')
             enviar_mensaje(numero_destino, texto)
 
         except Exception as e:
