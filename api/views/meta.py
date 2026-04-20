@@ -105,7 +105,7 @@ def webhook(request):
             {mensaje}
             ━━━━━━━━━━━━━━━
             """
-
+            texto = texto.encode('utf-8', 'ignore').decode('utf-8')
             enviar_mensaje(numero_destino, texto)
 
         except Exception as e:
