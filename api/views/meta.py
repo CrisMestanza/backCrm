@@ -42,7 +42,7 @@ def obtener_id_proyecto_desde_mensaje(mensaje):
         print("Proyecto detectado: Otros")
         return proyecto_otros.id_proyecto
 
-    print("Proyecto detectado: Otros no encontrado, usando ID 13")
+    print("Proyecto detectado: Otros no encontrado, usando ID 13 ejemplo")
     return 13
 
 # 🔹 Enviar mensaje WhatsApp
