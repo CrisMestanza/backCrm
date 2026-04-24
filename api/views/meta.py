@@ -6,9 +6,10 @@ from rest_framework.response import Response
 import requests
 from datetime import datetime
 from api.serializers import EmpresaSerializer
-from api.models import Empresa
+from api.models import Empresa, Proyectos
 import os
 import sys
+import unicodedata
 sys.stdout.reconfigure(encoding='utf-8')
 
 from dotenv import load_dotenv
@@ -18,6 +19,31 @@ TOKEN = os.getenv("WHATSAPP_TOKEN")
 # Configuración
 VERIFY_TOKEN = "nexuscrm"
 PHONE_ID = "1104656259400123"
+
+
+def normalizar_texto(texto):
+    texto = texto or ""
+    texto = unicodedata.normalize("NFD", texto.lower())
+    return "".join(caracter for caracter in texto if unicodedata.category(caracter) != "Mn")
+
+
+def obtener_id_proyecto_desde_mensaje(mensaje):
+    mensaje_normalizado = normalizar_texto(mensaje)
+    proyectos = list(Proyectos.objects.filter(estado=1))
+
+    for proyecto in sorted(proyectos, key=lambda item: len(item.nombre_proyecto), reverse=True):
+        nombre_normalizado = normalizar_texto(proyecto.nombre_proyecto)
+        if nombre_normalizado and nombre_normalizado in mensaje_normalizado:
+            print("Proyecto detectado:", proyecto.nombre_proyecto)
+            return proyecto.id_proyecto
+
+    proyecto_otros = Proyectos.objects.filter(nombre_proyecto__iexact="Otros").first()
+    if proyecto_otros:
+        print("Proyecto detectado: Otros")
+        return proyecto_otros.id_proyecto
+
+    print("Proyecto detectado: Otros no encontrado, usando ID 13")
+    return 13
 
 # 🔹 Enviar mensaje WhatsApp
 def enviar_mensaje(destino, texto):
@@ -42,8 +68,9 @@ def enviar_mensaje(destino, texto):
 
 
 # 🔹 Guardar lead en tu API
-def guardar_lead(numero):
+def guardar_lead(numero, mensaje):
     url = "https://api.ramosgrupo.lat/api/savelead/"
+    id_proyecto_interes = obtener_id_proyecto_desde_mensaje(mensaje)
 
     payload = {
         "nombre": "facebook",
@@ -51,7 +78,7 @@ def guardar_lead(numero):
         "email": "",
         "observacion": "Lead desde WhatsApp",
         "id_origen": 1,
-        "id_proyecto_interes": 1,
+        "id_proyecto_interes": id_proyecto_interes,
         "id_asesor": 11,
         "id_estado": 5,
         "id_subestado": 15,
@@ -93,7 +120,8 @@ def webhook(request):
 
             print(f"De {numero}: {mensaje}")
             #  Guardar lead automáticamente
-            guardar_lead(numero)
+            guardar_lead(numero, mensaje)
+            enviar_mensaje(numero, "Hola, en un momento un asesor se comunicara contigo")
 
             #  Reenviar a otro número
             
