@@ -17,7 +17,7 @@ load_dotenv()
 TOKEN = os.getenv("WHATSAPP_TOKEN")
 # Configuración
 VERIFY_TOKEN = "nexuscrm"
-PHONE_ID = "1089219270943492"
+PHONE_ID = "1104656259400123"
 
 # 🔹 Enviar mensaje WhatsApp
 def enviar_mensaje(destino, texto):
