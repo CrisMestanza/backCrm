@@ -43,6 +43,9 @@ urlpatterns = [
     
     # Proyectos
     path('getpoyectos/', getProyectos, name='get-proyectos'),
+    path('postproyectos/', postProyectos, name='post-proyectos'),
+    path('updateproyecto/<int:id_proyecto>/', updateProyecto, name='update-proyecto'),
+    path('deleteproyecto/<int:id_proyecto>/', deleteProyecto, name='delete-proyecto'),
     
     # Ventas
     path('saveventas/<int:id_lead>/', saveVentas, name='save-ventas'),
