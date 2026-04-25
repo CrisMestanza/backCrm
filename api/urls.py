@@ -18,6 +18,7 @@ urlpatterns = [
     # Asesores
     path('getasesores/', getAsesores, name='asesores'),
     path('postasesores/', postAsesores, name='post-asesores'),
+    path('updateasesor/<int:id_usuario>/', updateAsesor, name='update-asesor'),
     path('deleteasesor/<int:id_usuario>/', deleteAsesor, name='delete-asesor'),
     
     #Leads 
