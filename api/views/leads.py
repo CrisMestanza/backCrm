@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.contrib.auth.hashers import check_password 
 from datetime import datetime, timedelta
 from django.db.models import Q
-from api.views.meta import enviar_mensaje
+from api.views.meta import enviar_mensaje_detalle
 
 
 @api_view(['GET'])
@@ -86,11 +86,19 @@ def _formatear_fecha_llamada(fecha):
 
 def _enviar_aviso_llamada(lead, tipo='programada'):
     if not lead.id_asesor or not lead.id_asesor.telefono or not lead.fecha_llamada:
-        return False
+        return {
+            'ok': False,
+            'error': 'El lead no tiene asesor, telefono de asesor o fecha de llamada.',
+            'destino': None,
+        }
 
     destino = _normalizar_numero_peru(lead.id_asesor.telefono)
     if not destino:
-        return False
+        return {
+            'ok': False,
+            'error': 'El telefono del asesor no es valido.',
+            'destino': None,
+        }
 
     fecha_texto = _formatear_fecha_llamada(lead.fecha_llamada)
     prefijo = 'Recordatorio proximo' if tipo == 'proximo' else 'Llamada programada'
@@ -100,7 +108,11 @@ def _enviar_aviso_llamada(lead, tipo='programada'):
         f'Telefono: {lead.telefono or "Sin telefono"}\n'
         f'Fecha y hora: {fecha_texto}'
     )
-    return bool(enviar_mensaje(destino, texto))
+    resultado = enviar_mensaje_detalle(destino, texto)
+    return {
+        **resultado,
+        'destino': destino,
+    }
 
 
 @api_view(['PATCH'])
@@ -126,14 +138,21 @@ def programarLlamadaLead(request, id_lead):
         lead.recordatorio_proximo_enviado = 0
         lead.save(update_fields=['fecha_llamada', 'recordatorio_whatsapp_enviado', 'recordatorio_proximo_enviado'])
 
-        aviso_enviado = _enviar_aviso_llamada(lead, 'programada')
+        aviso_whatsapp = _enviar_aviso_llamada(lead, 'programada')
+        aviso_enviado = bool(aviso_whatsapp.get('ok'))
         if aviso_enviado:
             lead.recordatorio_whatsapp_enviado = 1
             lead.save(update_fields=['recordatorio_whatsapp_enviado'])
 
         serializer = LeadsSerializer(lead)
         return Response(
-            {'lead': serializer.data, 'aviso_whatsapp_enviado': aviso_enviado},
+            {
+                'lead': serializer.data,
+                'aviso_whatsapp_enviado': aviso_enviado,
+                'aviso_whatsapp_error': aviso_whatsapp.get('error'),
+                'aviso_whatsapp_status': aviso_whatsapp.get('status_code'),
+                'aviso_whatsapp_destino': aviso_whatsapp.get('destino'),
+            },
             status=status.HTTP_200_OK
         )
 
@@ -159,7 +178,8 @@ def revisarRecordatoriosLlamadas(request, id_asesor):
 
     avisos = []
     for lead in leads:
-        aviso_enviado = _enviar_aviso_llamada(lead, 'proximo')
+        aviso_whatsapp = _enviar_aviso_llamada(lead, 'proximo')
+        aviso_enviado = bool(aviso_whatsapp.get('ok'))
         lead.recordatorio_proximo_enviado = 1 if aviso_enviado else 0
         lead.save(update_fields=['recordatorio_proximo_enviado'])
         avisos.append({
@@ -167,6 +187,8 @@ def revisarRecordatoriosLlamadas(request, id_asesor):
             'nombre': lead.nombre,
             'fecha_llamada': lead.fecha_llamada,
             'aviso_whatsapp_enviado': aviso_enviado,
+            'aviso_whatsapp_error': aviso_whatsapp.get('error'),
+            'aviso_whatsapp_status': aviso_whatsapp.get('status_code'),
         })
 
     return Response({'avisos': avisos}, status=status.HTTP_200_OK)

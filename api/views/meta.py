@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view
 from django.http import HttpResponse
 from rest_framework.response import Response
 import requests
+from requests import RequestException
 from datetime import datetime
 from api.serializers import EmpresaSerializer
 from api.models import Empresa, Proyectos
@@ -46,7 +47,7 @@ def obtener_id_proyecto_desde_mensaje(mensaje):
     return 13
 
 # 🔹 Enviar mensaje WhatsApp
-def enviar_mensaje(destino, texto):
+def enviar_mensaje_detalle(destino, texto):
     url = f"https://graph.facebook.com/v25.0/{PHONE_ID}/messages"
 
     headers = {
@@ -63,9 +64,48 @@ def enviar_mensaje(destino, texto):
         }
     }
 
-    response = requests.post(url, headers=headers, json=data)
-    print(" Enviado:", response.status_code, response.text)
-    return response.ok
+    if not TOKEN:
+        return {
+            "ok": False,
+            "status_code": None,
+            "error": "No se encontro WHATSAPP_TOKEN en el .env del backend.",
+            "response": None,
+        }
+
+    try:
+        response = requests.post(url, headers=headers, json=data, timeout=15)
+    except RequestException as exc:
+        print(" Error enviando WhatsApp:", str(exc))
+        return {
+            "ok": False,
+            "status_code": None,
+            "error": f"No se pudo conectar con Meta: {exc}",
+            "response": None,
+        }
+
+    try:
+        response_data = response.json()
+    except ValueError:
+        response_data = response.text
+
+    print(" Enviado:", response.status_code, response_data)
+    error = None
+    if not response.ok:
+        if isinstance(response_data, dict):
+            error = response_data.get("error", {}).get("message") or str(response_data)
+        else:
+            error = str(response_data)
+
+    return {
+        "ok": response.ok,
+        "status_code": response.status_code,
+        "error": error,
+        "response": response_data,
+    }
+
+
+def enviar_mensaje(destino, texto):
+    return enviar_mensaje_detalle(destino, texto)["ok"]
 
 
 # 🔹 Guardar lead en tu API
