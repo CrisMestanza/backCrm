@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 from api.models import Leads
-from api.views.leads import _enviar_aviso_llamada
+from api.views.leads import MINUTOS_ANTES_RECORDATORIO_LLAMADA, _enviar_aviso_llamada
 
 
 class Command(BaseCommand):
@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         ahora = timezone.now()
-        limite = ahora + timedelta(minutes=30)
+        limite = ahora + timedelta(minutes=MINUTOS_ANTES_RECORDATORIO_LLAMADA)
 
         leads = Leads.objects.select_related('id_asesor').filter(
             estado=1,
@@ -23,7 +23,8 @@ class Command(BaseCommand):
 
         enviados = 0
         for lead in leads:
-            aviso_enviado = _enviar_aviso_llamada(lead, 'proximo')
+            aviso_whatsapp = _enviar_aviso_llamada(lead, 'proximo')
+            aviso_enviado = bool(aviso_whatsapp.get('ok'))
             lead.recordatorio_proximo_enviado = 1 if aviso_enviado else 0
             lead.save(update_fields=['recordatorio_proximo_enviado'])
             enviados += 1 if aviso_enviado else 0

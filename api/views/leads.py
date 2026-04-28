@@ -9,6 +9,8 @@ from datetime import datetime, timedelta
 from django.db.models import Q
 from api.views.meta import enviar_mensaje_detalle
 
+MINUTOS_ANTES_RECORDATORIO_LLAMADA = 5
+
 
 @api_view(['GET'])
 def getLead(request, id_asesor):
@@ -138,20 +140,13 @@ def programarLlamadaLead(request, id_lead):
         lead.recordatorio_proximo_enviado = 0
         lead.save(update_fields=['fecha_llamada', 'recordatorio_whatsapp_enviado', 'recordatorio_proximo_enviado'])
 
-        aviso_whatsapp = _enviar_aviso_llamada(lead, 'programada')
-        aviso_enviado = bool(aviso_whatsapp.get('ok'))
-        if aviso_enviado:
-            lead.recordatorio_whatsapp_enviado = 1
-            lead.save(update_fields=['recordatorio_whatsapp_enviado'])
-
         serializer = LeadsSerializer(lead)
         return Response(
             {
                 'lead': serializer.data,
-                'aviso_whatsapp_enviado': aviso_enviado,
-                'aviso_whatsapp_error': aviso_whatsapp.get('error'),
-                'aviso_whatsapp_status': aviso_whatsapp.get('status_code'),
-                'aviso_whatsapp_destino': aviso_whatsapp.get('destino'),
+                'aviso_whatsapp_enviado': False,
+                'aviso_whatsapp_programado': True,
+                'aviso_whatsapp_minutos_antes': MINUTOS_ANTES_RECORDATORIO_LLAMADA,
             },
             status=status.HTTP_200_OK
         )
@@ -167,7 +162,7 @@ def programarLlamadaLead(request, id_lead):
 @api_view(['GET'])
 def revisarRecordatoriosLlamadas(request, id_asesor):
     ahora = timezone.now()
-    limite = ahora + timedelta(minutes=30)
+    limite = ahora + timedelta(minutes=MINUTOS_ANTES_RECORDATORIO_LLAMADA)
 
     leads = Leads.objects.select_related('id_asesor').filter(
         id_asesor=id_asesor,

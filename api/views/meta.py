@@ -19,7 +19,7 @@ load_dotenv()
 TOKEN = os.getenv("WHATSAPP_TOKEN")
 # Configuración
 VERIFY_TOKEN = "nexuscrm"
-PHONE_ID = "1104656259400123"
+PHONE_ID = os.getenv("WHATSAPP_PHONE_ID", "1104656259400123")
 
 
 def normalizar_texto(texto):
