@@ -5,7 +5,11 @@ from django.db.models import Q
 from django.utils import timezone
 
 from api.models import Leads
-from api.views.leads import MINUTOS_ANTES_RECORDATORIO_LLAMADA, _enviar_aviso_llamada
+from api.views.leads import (
+    MINUTOS_ANTES_RECORDATORIO_LLAMADA,
+    MINUTOS_TOLERANCIA_RECORDATORIO_LLAMADA,
+    _enviar_aviso_llamada,
+)
 
 
 class Command(BaseCommand):
@@ -13,11 +17,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         ahora = timezone.now()
+        desde = ahora - timedelta(minutes=MINUTOS_TOLERANCIA_RECORDATORIO_LLAMADA)
         limite = ahora + timedelta(minutes=MINUTOS_ANTES_RECORDATORIO_LLAMADA)
 
         leads = Leads.objects.select_related('id_asesor').filter(
             estado=1,
-            fecha_llamada__gte=ahora,
+            fecha_llamada__gte=desde,
             fecha_llamada__lte=limite,
         ).filter(Q(recordatorio_proximo_enviado=0) | Q(recordatorio_proximo_enviado__isnull=True))
 

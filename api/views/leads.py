@@ -9,7 +9,8 @@ from datetime import datetime, timedelta
 from django.db.models import Q
 from api.views.meta import enviar_mensaje_detalle
 
-MINUTOS_ANTES_RECORDATORIO_LLAMADA = 5
+MINUTOS_ANTES_RECORDATORIO_LLAMADA = 15
+MINUTOS_TOLERANCIA_RECORDATORIO_LLAMADA = 2
 
 
 @api_view(['GET'])
@@ -162,12 +163,13 @@ def programarLlamadaLead(request, id_lead):
 @api_view(['GET'])
 def revisarRecordatoriosLlamadas(request, id_asesor):
     ahora = timezone.now()
+    desde = ahora - timedelta(minutes=MINUTOS_TOLERANCIA_RECORDATORIO_LLAMADA)
     limite = ahora + timedelta(minutes=MINUTOS_ANTES_RECORDATORIO_LLAMADA)
 
     leads = Leads.objects.select_related('id_asesor').filter(
         id_asesor=id_asesor,
         estado=1,
-        fecha_llamada__gte=ahora,
+        fecha_llamada__gte=desde,
         fecha_llamada__lte=limite,
     ).filter(Q(recordatorio_proximo_enviado=0) | Q(recordatorio_proximo_enviado__isnull=True))
 
