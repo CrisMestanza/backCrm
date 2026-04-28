@@ -27,6 +27,8 @@ urlpatterns = [
     path('totalleadshoy/', totalLeadsHoy, name='total-leads-hoy'),
     path('savelead/', saveLead, name='save-lead'),
     path('updatelead/<int:pk>/', updateLead, name='update-lead'),
+    path('programarllamada/<int:id_lead>/', programarLlamadaLead, name='programar-llamada-lead'),
+    path('recordatoriosllamadas/<int:id_asesor>/', revisarRecordatoriosLlamadas, name='recordatorios-llamadas'),
     
     # Estados y Subestados
     path('getestados/', getEstados, name='estados'),

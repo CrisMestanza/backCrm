@@ -65,6 +65,7 @@ def enviar_mensaje(destino, texto):
 
     response = requests.post(url, headers=headers, json=data)
     print(" Enviado:", response.status_code, response.text)
+    return response.ok
 
 
 # 🔹 Guardar lead en tu API
