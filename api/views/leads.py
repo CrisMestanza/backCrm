@@ -29,7 +29,7 @@ def getLead(request, id_asesor):
 
 @api_view(['GET'])
 def totalLeads(request):
-    leads = Leads.objects.filter(id_estado = 5).count()
+    leads = Leads.objects.filter(estado=1).count()
     return Response({'total': leads}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
