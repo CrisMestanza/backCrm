@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from api.serializers import LeadsSerializer,LeadsSaveSerializer
-from api.models import Leads
+from api.models import Leads, Usuarios
 from django.utils import timezone
 from django.contrib.auth.hashers import check_password 
 from datetime import datetime, timedelta
@@ -15,7 +15,15 @@ MINUTOS_TOLERANCIA_RECORDATORIO_LLAMADA = 2
 
 @api_view(['GET'])
 def getLead(request, id_asesor):
-    leads = Leads.objects.filter(id_asesor=id_asesor,estado=1).order_by('-fecha_registro')
+    usuario = Usuarios.objects.filter(id_usuario=id_asesor, estado=1).first()
+    rol_usuario = (usuario.rol or '').strip().upper() if usuario else ''
+    if rol_usuario == 'ADMIN':
+        leads = Leads.objects.filter(
+            Q(id_asesor__isnull=True) | Q(id_asesor__rol__iexact='ADMIN'),
+            estado=1
+        ).order_by('-fecha_registro')
+    else:
+        leads = Leads.objects.filter(id_asesor=id_asesor, estado=1).order_by('-fecha_registro')
     serializer = LeadsSerializer(leads, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 

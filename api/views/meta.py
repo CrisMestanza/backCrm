@@ -120,12 +120,12 @@ def guardar_lead(numero, mensaje):
         "observacion": "Lead desde WhatsApp",
         "id_origen": 1,
         "id_proyecto_interes": id_proyecto_interes,
-        "id_asesor": 11,
+        "id_asesor": None,
         "id_estado": 5,
         "id_subestado": 15,
         "fecha_registro": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "fecha_asignacion": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "nombreAsesor": "Verito",
+        "nombreAsesor": "Admin",
         "estado":1
     }
 
